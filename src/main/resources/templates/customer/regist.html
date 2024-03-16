@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Registration</title>
+</head>
+<body>
+<div th:replace="common/header.html"></div>
+<h3>신규 고객 등록</h3>
+<form action="/customer/regist" method="post" onsubmit="return validateForm()">
+    <label>고객이름 : </label> <input type="text" id="customerName" name="customerName"><br>
+    <label>고객성별 : </label>
+    <select name="customerGender" id="customerGender">
+        <option value="M">남</option>
+        <option value="F">여</option>
+    </select><br>
+    <label>고객나이 : </label> <input type="number" id="customerAge" name="customerAge"><br>
+    <label>거주환경 : </label>
+    <select name="categoryNo" id="categoryNo"></select><br>
+    <label>거주평수 : </label> <input type="number" id="roomCode" name="roomCode"><br>
+    <input type="submit">
+</form>
+
+<script>
+    function validateForm() {
+        var customerName = document.getElementById("customerName").value;
+        var customerAge = document.getElementById("customerAge").value;
+        var roomCode = document.getElementById("roomCode").value;
+
+        if (customerName === "") {
+            alert("고객 이름을 입력하세요.");
+            return false;
+        }
+        if (customerAge === "" || isNaN(customerAge) || customerAge < 18) {
+            alert("유효한 고객 나이를 입력하세요.");
+            return false;
+        }
+        if (roomCode === "" || isNaN(roomCode) || roomCode < 1) {
+            alert("유효한 거주 평수를 입력하세요.");
+            return false;
+        }
+
+        return true;
+    }
+
+    fetch('/customer/category')
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+
+            const categoryNoSelect = document.getElementById("categoryNo");
+
+            data.forEach(category => {
+                const option = document.createElement('option');
+                option.textContent = category.categoryName;
+                option.value = category.categoryNo;
+                categoryNoSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
+</script>
+</body>
+</html>
